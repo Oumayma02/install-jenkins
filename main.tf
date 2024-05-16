@@ -17,7 +17,7 @@ provider "proxmox" {
 resource "proxmox_vm_qemu" "test_server" {
   count = 1
 
-  name        = "debian-vm-${count.index + 1}"
+  name        = "jenkins-vm-${count.index + 1}"
   target_node = var.proxmox_host
   clone       = var.template_name
   os_type     = "cloud-init"
@@ -50,7 +50,7 @@ resource "proxmox_vm_qemu" "test_server" {
     connection {
       type        = "ssh"
       user        = "debian"
-      host        = "192.168.254.244"
+      host        = "192.168.254.252"
       private_key = file("~/.ssh/id_rsa")
       port        = 22
     }
