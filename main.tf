@@ -14,7 +14,7 @@ provider "proxmox" {
   pm_tls_insecure    = true
 }
 
-resource "proxmox_vm_qemu" "test_server" {
+resource "proxmox_vm_qemu" "jenkins" {
   count = 1
 
   name        = "jenkins-vm-${count.index + 1}"
@@ -50,16 +50,19 @@ resource "proxmox_vm_qemu" "test_server" {
     connection {
       type        = "ssh"
       user        = "debian"
-      host        = "192.168.254.252"
+      host        = "192.168.254.158"
       private_key = file("~/.ssh/id_rsa")
       port        = 22
     }
-    inline = [
-      "wget -q -O - https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key | sudo apt-key add -",
+   inline = [
+ "sudo apt update -y",
+      "sudo apt install openjdk-11-jdk -y", // Jenkins requires Java, installing OpenJDK 11
+      "wget -q -O - https://pkg.jenkins.io/debian-stable/jenkins.io.key | sudo apt-key add -",
       "sudo sh -c 'echo deb https://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'",
-      "sudo apt-get update",
-      "sudo apt-get install -y openjdk-11-jdk",
-      "sudo apt-get install -y jenkins"
-    ]
+      "sudo apt update -y",
+      "sudo apt-get install jenkins -y",
+      "sudo systemctl start jenkins",
+      "sudo systemctl enable jenkins"
+]
   }
 }
